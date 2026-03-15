@@ -1,0 +1,41 @@
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .no-print,
+  .control-panel,
+  .history-panel {
+    display: none !important;
+  }
+
+  .app-shell,
+  .workspace,
+  .workspace-side,
+  .display-screen,
+  .display-content {
+    margin: 0 !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    background: #fff !important;
+  }
+
+  .display-screen {
+    display: block !important;
+  }
+
+  .display-content {
+    min-height: 257mm !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 12mm !important;
+  }
+
+  .display-text {
+    color: #000 !important;
+    max-width: 100% !important;
+  }
+}
+
