@@ -1,12 +1,16 @@
 import { effect } from "@preact/signals";
-import { useEffect } from "preact/hooks";
-import { ControlPanel } from "./components/control-panel";
+import menuIcon from "bootstrap-icons/icons/list.svg";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { DisplayScreen } from "./components/display-screen";
 import { HistoryPanel } from "./components/history-panel";
 import {
+  SettingsDrawer,
+  showSettingsDrawer,
+  type DrawerElement
+} from "./components/settings-drawer";
+import {
   activeTheme,
   applyHistoryEntry,
-  currentScreen,
   fontPreset,
   historyEntries,
   lengthWarning,
@@ -24,6 +28,7 @@ import {
   savePreferences,
   upsertHistoryEntry
 } from "./lib/storage";
+import { UI_MESSAGES } from "./ui-messages";
 import type { ActiveTheme, FontPreset, HistoryEntry, ThemeChoice } from "./types";
 
 const fontClassMap: Record<FontPreset, string> = {
@@ -45,6 +50,9 @@ function detectSystemTheme(): ActiveTheme {
 }
 
 export function App() {
+  const drawerRef = useRef<DrawerElement>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true);
+
   useEffect(() => {
     systemTheme.value = detectSystemTheme();
     historyEntries.value = loadHistory();
@@ -101,11 +109,6 @@ export function App() {
     saveHistory(historyEntries.value);
   };
 
-  const openDisplay = () => {
-    commitCurrentText();
-    currentScreen.value = "display";
-  };
-
   const handlePrint = () => {
     commitCurrentText();
     window.print();
@@ -130,60 +133,65 @@ export function App() {
     <main
       class={`app-shell theme-${activeTheme.value} ${fontClassMap[fontPreset.value]}`}
     >
-      {currentScreen.value === "compose" ? (
-        <div class="workspace">
-          <ControlPanel
-            text={text.value}
-            textColor={textColor.value}
-            themeChoice={themeChoice.value}
-            fontPreset={fontPreset.value}
-            lengthWarning={lengthWarning.value}
-            onTextInput={updateText}
-            onThemeChange={(value: ThemeChoice) => {
-              themeChoice.value = value;
-            }}
-            onFontChange={(value: FontPreset) => {
-              fontPreset.value = value;
-            }}
-            onTextColorChange={(value: string) => {
-              textColor.value = value;
-            }}
-            onOpenDisplay={openDisplay}
-            onPrint={handlePrint}
-          />
-          <div class="workspace-side">
-            <DisplayScreen
-              text={text.value}
-              textColor={textColor.value}
-              activeTheme={activeTheme.value}
-              fontPreset={fontPreset.value}
-              lengthWarning={lengthWarning.value}
-              onBack={() => {
-                currentScreen.value = "compose";
-              }}
-              onPrint={handlePrint}
-            />
-            <HistoryPanel
-              entries={historyEntries.value}
-              onSelect={handleHistorySelect}
-              onDelete={handleHistoryDelete}
-              onClear={handleHistoryClear}
-            />
-          </div>
+      <header class="app-header no-print">
+        <div class="app-header-copy">
+          <p class="eyebrow">{UI_MESSAGES.appEyebrow.text}</p>
+          <h1>{UI_MESSAGES.appTitle.text}</h1>
         </div>
-      ) : (
+        <sl-icon-button
+          label={UI_MESSAGES.openSettings.text}
+          src={menuIcon}
+          onClick={() => {
+            showSettingsDrawer(drawerRef.current);
+          }}
+        />
+      </header>
+
+      <div class={`workspace ${isHistoryOpen ? "with-history" : "without-history"}`}>
+        <aside class={`history-sidebar no-print ${isHistoryOpen ? "is-open" : "is-closed"}`}>
+          <HistoryPanel
+            entries={historyEntries.value}
+            onSelect={handleHistorySelect}
+            onDelete={handleHistoryDelete}
+            onClear={handleHistoryClear}
+          />
+        </aside>
+
         <DisplayScreen
           text={text.value}
           textColor={textColor.value}
           activeTheme={activeTheme.value}
           fontPreset={fontPreset.value}
           lengthWarning={lengthWarning.value}
-          onBack={() => {
-            currentScreen.value = "compose";
+          isSidebarOpen={isHistoryOpen}
+          onTextInput={updateText}
+          onTextCommit={commitCurrentText}
+          onToggleSidebar={() => {
+            setIsHistoryOpen((current) => !current);
           }}
           onPrint={handlePrint}
         />
-      )}
+      </div>
+
+      <footer class="app-footer no-print">
+        <small>{UI_MESSAGES.appCopyright.text}</small>
+      </footer>
+
+      <SettingsDrawer
+        drawerRef={drawerRef}
+        textColor={textColor.value}
+        themeChoice={themeChoice.value}
+        fontPreset={fontPreset.value}
+        onThemeChange={(value: ThemeChoice) => {
+          themeChoice.value = value;
+        }}
+        onFontChange={(value: FontPreset) => {
+          fontPreset.value = value;
+        }}
+        onTextColorChange={(value: string) => {
+          textColor.value = value;
+        }}
+      />
     </main>
   );
 }

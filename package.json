@@ -28,6 +28,7 @@
     "@preact/signals": "^2.8.2",
     "@preact/signals-core": "^1.14.0",
     "@shoelace-style/shoelace": "^2.20.1",
+    "bootstrap-icons": "^1.13.1",
     "preact": "^10.29.0"
   },
   "devDependencies": {

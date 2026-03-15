@@ -1,14 +1,16 @@
 :root {
   color-scheme: light;
-  --bg: #eef2f5;
-  --panel: rgba(255, 255, 255, 0.88);
+  --bg: #edf2f6;
+  --panel: rgba(255, 255, 255, 0.84);
+  --panel-strong: rgba(255, 255, 255, 0.94);
   --panel-border: rgba(15, 23, 42, 0.08);
   --text: #102033;
-  --muted: #4a6079;
+  --muted: #51657d;
   --accent: #0f766e;
   --accent-strong: #115e59;
   --danger: #b42318;
   --shadow: 0 24px 72px rgba(15, 23, 42, 0.12);
+  --footer-height: 4.5rem;
   font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -24,7 +26,8 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #09121d;
-  --panel: rgba(9, 18, 29, 0.82);
+  --panel: rgba(9, 18, 29, 0.8);
+  --panel-strong: rgba(9, 18, 29, 0.92);
   --panel-border: rgba(255, 255, 255, 0.1);
   --text: #edf4fb;
   --muted: #9fb4c8;
@@ -63,10 +66,6 @@ textarea {
   font: inherit;
 }
 
-sl-button::part(base) {
-  font-weight: 700;
-}
-
 sl-card::part(base) {
   border: 1px solid var(--panel-border);
   background: var(--panel);
@@ -74,7 +73,11 @@ sl-card::part(base) {
   border-radius: 1.5rem;
 }
 
-sl-textarea,
+sl-button::part(base),
+sl-icon-button::part(base) {
+  font-weight: 700;
+}
+
 sl-select,
 sl-color-picker,
 sl-alert {
@@ -83,22 +86,80 @@ sl-alert {
 
 .app-shell {
   min-height: 100vh;
-  padding: 1.5rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.app-header,
+.app-footer {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 1.5rem;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.app-header-copy h1,
+.app-header-copy p {
+  margin: 0;
+}
+
+.app-header-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.app-header sl-icon-button,
+.app-footer small {
+  justify-self: end;
 }
 
 .workspace {
+  min-height: 0;
   display: grid;
-  gap: 1.25rem;
-  grid-template-columns: minmax(20rem, 27rem) 1fr;
-  align-items: start;
+  gap: 1rem;
+  align-items: stretch;
 }
 
-.workspace-side {
-  display: grid;
-  gap: 1.25rem;
+.workspace.with-history {
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+}
+
+.workspace.without-history {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.history-sidebar {
+  min-width: 0;
+  overflow: hidden;
+  transition:
+    width 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease,
+    margin 180ms ease;
+}
+
+.history-sidebar.is-open {
+  width: 100%;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.history-sidebar.is-closed {
+  width: 0;
+  opacity: 0;
+  transform: translateX(-1rem);
 }
 
 .panel {
+  height: 100%;
   backdrop-filter: blur(18px);
 }
 
@@ -113,6 +174,12 @@ sl-alert {
   grid-template-columns: 1fr auto;
 }
 
+.panel h1,
+.panel h2,
+.panel p {
+  margin: 0;
+}
+
 .eyebrow {
   color: var(--accent-strong);
   font-size: 0.8rem;
@@ -122,64 +189,87 @@ sl-alert {
   text-transform: uppercase;
 }
 
-.panel h1,
-.panel h2,
-.panel p {
-  margin: 0;
-}
-
-.panel-copy,
-.field p,
-.history-meta,
-.empty-state {
-  color: var(--muted);
-}
-
 .field {
   display: grid;
   gap: 0.45rem;
-  margin-bottom: 1rem;
 }
 
 .field > span {
   font-weight: 700;
 }
 
-.field-grid {
+.history-meta,
+.empty-state,
+.theme-switch p {
+  color: var(--muted);
+}
+
+.settings-drawer::part(panel) {
+  background: var(--panel-strong);
+  border-left: 0;
+  border-right: 1px solid var(--panel-border);
+  overflow: visible;
+}
+
+.settings-drawer::part(body) {
   display: grid;
-  gap: 0.9rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
-.note-field {
-  border: 1px dashed var(--panel-border);
-  border-radius: 1rem;
-  padding: 1rem;
+.drawer-section {
+  display: grid;
+  gap: 1rem;
 }
 
-.warning {
-  color: var(--accent-strong);
-  font-weight: 700;
+.drawer-section h2,
+.drawer-section p {
+  margin: 0;
 }
 
-.actions {
+.theme-toggle-row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-system-control,
+.manual-theme-switches {
+  display: inline-flex;
+  align-items: center;
   gap: 0.75rem;
 }
 
-.actions sl-button::part(base) {
-  min-width: 11rem;
+.manual-theme-switches {
+  padding-left: 1rem;
+  border-left: 1px solid var(--panel-border);
+}
+
+.settings-drawer sl-color-picker {
+  position: relative;
+  z-index: 30;
+}
+
+.theme-system-control sl-icon-button::part(base),
+.theme-mode-button::part(base) {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+}
+
+.theme-mode-button.is-selected::part(base) {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 56%, transparent);
+  color: var(--accent-strong);
 }
 
 .display-screen {
   position: relative;
-  min-height: min(68vh, 48rem);
-  border-radius: 2rem;
-  overflow: hidden;
+  min-height: min(72vh, 56rem);
   display: grid;
   grid-template-rows: auto 1fr;
   border: 1px solid var(--panel-border);
+  border-radius: 2rem;
+  overflow: hidden;
   box-shadow: var(--shadow);
 }
 
@@ -201,26 +291,48 @@ sl-alert {
 
 .toolbar-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.toolbar-actions sl-icon-button::part(base),
+.display-toolbar sl-icon-button::part(base),
+.app-header sl-icon-button::part(base),
+.app-footer sl-icon-button::part(base) {
+  background: color-mix(in srgb, var(--panel-strong) 88%, transparent);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
 }
 
 .display-content {
   display: grid;
   place-items: center;
-  padding: 2rem;
+  padding: 1.5rem 2rem 2rem;
   text-align: center;
 }
 
 .display-text {
+  min-width: min(90%, 18rem);
+  max-width: 100%;
   margin: 0;
+  outline: none;
   line-height: 0.95;
   word-break: keep-all;
+  white-space: pre-wrap;
+}
+
+.display-text:empty::before {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, var(--text) 38%, transparent);
 }
 
 .display-warning {
   margin-top: 1rem;
   max-width: min(42rem, 100%);
+}
+
+.history-panel {
+  height: 100%;
 }
 
 .history-list {
@@ -232,22 +344,21 @@ sl-alert {
 }
 
 .history-list li {
-  display: grid;
-  gap: 0.65rem;
-  grid-template-columns: 1fr auto;
+  position: relative;
+  padding-top: 0.45rem;
 }
 
 .history-item {
   display: grid;
   gap: 0.35rem;
   justify-items: start;
+  width: 100%;
+  padding: 1rem 1.1rem;
   border: 1px solid var(--panel-border);
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.48);
   color: var(--text);
   cursor: pointer;
-  padding: 1rem 1.1rem;
-  border-radius: 1rem;
   text-align: left;
 }
 
@@ -267,8 +378,38 @@ sl-alert {
   flex-wrap: wrap;
 }
 
-.history-delete::part(base) {
-  width: 100%;
+.history-delete-button {
+  position: absolute;
+  top: -0.15rem;
+  left: -0.2rem;
+  z-index: 2;
+}
+
+.history-delete-button::part(base) {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 1.15rem;
+  color: #111827;
+  background: #ffffff;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.history-delete-button::part(base) sl-icon,
+.history-delete-button::part(base) svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.history-delete-button::part(base):hover,
+.history-delete-button::part(base):focus-visible {
+  color: #ffffff;
+  background: var(--danger);
+  border-color: var(--danger);
 }
 
 .font-gothic,
@@ -304,31 +445,49 @@ sl-alert {
     grid-template-columns: 1fr;
   }
 
-  .field-grid {
-    grid-template-columns: 1fr;
+  .history-sidebar.is-open,
+  .history-sidebar.is-closed {
+    width: 100%;
+    opacity: 1;
+    transform: none;
   }
 
-  .display-screen {
-    min-height: 54vh;
+  .history-sidebar.is-closed {
+    display: none;
   }
 }
 
 @media (max-width: 640px) {
-  .history-list li {
-    grid-template-columns: 1fr;
+  .app-header,
+  .app-footer {
+    grid-template-columns: auto 1fr;
   }
 
-  .display-toolbar,
-  .actions {
+  .app-footer small {
+    justify-self: end;
+    grid-column: 2;
+  }
+
+  .display-toolbar {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .theme-toggle-row {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .manual-theme-switches {
+    padding-left: 0;
+    border-left: 0;
   }
 
   .toolbar-actions {
-    width: 100%;
+    justify-content: flex-end;
   }
 
-  .toolbar-actions button,
-  .actions button {
-    width: 100%;
+  .display-content {
+    padding: 1rem 1.25rem 1.5rem;
   }
 }

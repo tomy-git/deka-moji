@@ -1,3 +1,5 @@
+import { UI_MESSAGES } from "../ui-messages";
+
 const WARNING_GRAPHEME_THRESHOLD = 12;
 
 export function sanitizeText(rawText: string): string {
@@ -16,14 +18,9 @@ export function countGraphemes(text: string): number {
 export function createLengthWarning(text: string): string | null {
   const graphemeCount = countGraphemes(text);
 
-  if (graphemeCount === 0) {
-    return "文字を入力すると表示プレビューが更新されます。";
-  }
-
   if (graphemeCount > WARNING_GRAPHEME_THRESHOLD) {
-    return "文字数が多いため、自動で縮小して表示しています。";
+    return UI_MESSAGES.lengthWarning.text;
   }
 
   return null;
 }
-

@@ -8,7 +8,6 @@ export const themeChoice = signal<ThemeChoice>("system");
 export const systemTheme = signal<ActiveTheme>("light");
 export const fontPreset = signal<FontPreset>("gothic");
 export const historyEntries = signal<HistoryEntry[]>([]);
-export const currentScreen = signal<"compose" | "display">("compose");
 
 export const activeTheme = computed<ActiveTheme>(() => {
   if (themeChoice.value === "system") {
@@ -29,6 +28,4 @@ export function applyHistoryEntry(entry: HistoryEntry): void {
   textColor.value = entry.textColor;
   themeChoice.value = entry.themeChoice;
   fontPreset.value = entry.fontPreset;
-  currentScreen.value = "display";
 }
-
