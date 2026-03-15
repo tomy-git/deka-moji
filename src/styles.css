@@ -395,6 +395,32 @@ sl-alert {
   place-items: center;
   padding: 1.5rem 2rem 2rem;
   text-align: center;
+  overflow: hidden;
+}
+
+.display-content.is-scrollable {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 1rem;
+  white-space: nowrap;
+  scrollbar-color: color-mix(in srgb, var(--accent) 70%, transparent) color-mix(in srgb, var(--panel) 85%, transparent);
+  scrollbar-width: thin;
+}
+
+.display-content.is-scrollable::-webkit-scrollbar {
+  height: 0.85rem;
+}
+
+.display-content.is-scrollable::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  border-radius: 999px;
+}
+
+.display-content.is-scrollable::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 999px;
+  border: 0.18rem solid color-mix(in srgb, var(--panel) 88%, transparent);
 }
 
 .display-text {
@@ -405,6 +431,13 @@ sl-alert {
   line-height: 0.95;
   word-break: keep-all;
   white-space: pre-wrap;
+}
+
+.display-text.is-scrollable {
+  display: inline-block;
+  min-width: max-content;
+  padding-bottom: 0.25rem;
+  white-space: nowrap;
 }
 
 .display-text.is-empty::before {
@@ -418,11 +451,16 @@ sl-alert {
 }
 
 .history-panel {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   width: 100%;
 }
 
 .history-panel::part(base) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -432,6 +470,26 @@ sl-alert {
   gap: 0.8rem;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.35rem;
+  scrollbar-color: color-mix(in srgb, var(--accent) 70%, transparent) color-mix(in srgb, var(--panel) 85%, transparent);
+  scrollbar-width: thin;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 0.75rem;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  border-radius: 999px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 72%, transparent);
+  border-radius: 999px;
+  border: 0.14rem solid color-mix(in srgb, var(--panel) 88%, transparent);
 }
 
 .history-list li {

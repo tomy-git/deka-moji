@@ -1,5 +1,3 @@
-import { countGraphemes } from "./text";
-
 const MIN_FONT_SIZE = 40;
 const MAX_FONT_SIZE = 560;
 
@@ -12,11 +10,11 @@ export function calculateFontSize(
     return 120;
   }
 
-  const graphemeCount = Math.max(countGraphemes(text), 1);
-  const widthDriven = width / (graphemeCount * 0.68);
-  const heightDriven = height * 0.62;
-  const next = Math.floor(Math.min(widthDriven, heightDriven));
+  const shorterSide = Math.min(width, height);
+  const longerSide = Math.max(width, height);
+  const baseFromShortSide = shorterSide * 0.42;
+  const baseFromLongSide = longerSide * 0.18;
+  const next = Math.floor(Math.min(baseFromShortSide, baseFromLongSide));
 
   return Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE, next));
 }
-

@@ -5,6 +5,7 @@ import sidebarOpenIcon from "bootstrap-icons/icons/layout-sidebar-inset.svg";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { calculateFontSize } from "../lib/fit-text";
 import { canUseFullscreen, enterFullscreen, exitFullscreen } from "../lib/fullscreen";
+import { countGraphemes } from "../lib/text";
 import { UI_MESSAGES } from "../ui-messages";
 import type { ActiveTheme, FontPreset } from "../types";
 
@@ -23,21 +24,23 @@ type Props = {
 
 export function DisplayScreen(props: Props) {
   const containerRef = useRef<HTMLElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const editableRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(120);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenSupported, setFullscreenSupported] = useState(false);
+  const isScrollableText = countGraphemes(props.text) > 12;
 
   useEffect(() => {
     const updateSize = () => {
-      const element = containerRef.current;
+      const element = scrollAreaRef.current ?? containerRef.current;
       if (!element) {
         return;
       }
 
       const { width, height } = element.getBoundingClientRect();
       setFontSize(calculateFontSize(props.text, width, height));
-      setFullscreenSupported(canUseFullscreen(element));
+      setFullscreenSupported(canUseFullscreen(containerRef.current ?? element));
     };
 
     updateSize();
@@ -139,10 +142,13 @@ export function DisplayScreen(props: Props) {
         </div>
       </header>
 
-      <div class="display-content">
+      <div
+        ref={scrollAreaRef}
+        class={`display-content ${isScrollableText ? "is-scrollable" : ""}`}
+      >
         <div
           ref={editableRef}
-          class={`display-text ${props.text ? "has-value" : "is-empty"}`}
+          class={`display-text ${props.text ? "has-value" : "is-empty"} ${isScrollableText ? "is-scrollable" : ""}`}
           contentEditable
           role="textbox"
           aria-label={UI_MESSAGES.displayTextboxLabel.text}
