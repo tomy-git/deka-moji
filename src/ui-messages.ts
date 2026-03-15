@@ -30,7 +30,7 @@ export const UI_MESSAGES = {
   fullscreenEnter: { id: "display.action.fullscreen-enter", text: "全画面表示" },
   fullscreenExit: { id: "display.action.fullscreen-exit", text: "全画面を終了" },
   displayTextboxLabel: { id: "display.textbox.label", text: "表示文字" },
-  displayPlaceholder: { id: "display.textbox.placeholder", text: "ここに直接入力" },
+  displayPlaceholder: { id: "display.textbox.placeholder", text: "ここに文字を入力..." },
   lengthWarning: {
     id: "display.alert.length-warning",
     text: "文字数が多いため、自動で縮小して表示しています。"

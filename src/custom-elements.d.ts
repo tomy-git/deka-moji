@@ -7,6 +7,7 @@ declare namespace preact.JSX {
     "sl-color-picker": any;
     "sl-divider": any;
     "sl-drawer": any;
+    "sl-icon": any;
     "sl-icon-button": any;
     "sl-option": any;
     "sl-select": any;

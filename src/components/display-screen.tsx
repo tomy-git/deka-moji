@@ -66,6 +66,11 @@ export function DisplayScreen(props: Props) {
       return;
     }
 
+    if (!props.text) {
+      editable.textContent = "";
+      return;
+    }
+
     if (editable.textContent !== props.text) {
       editable.textContent = props.text;
     }
@@ -93,6 +98,9 @@ export function DisplayScreen(props: Props) {
     }
 
     const normalized = editable.innerText.replace(/\n+/g, " ");
+    if (!normalized.trim()) {
+      editable.textContent = "";
+    }
     props.onTextInput(normalized);
   };
 
@@ -112,7 +120,12 @@ export function DisplayScreen(props: Props) {
           onClick={props.onToggleSidebar}
         />
         <div class="toolbar-actions">
-          <sl-icon-button label={UI_MESSAGES.pdfExport.text} src={pdfIcon} onClick={props.onPrint} />
+          <sl-icon-button
+            label={UI_MESSAGES.pdfExport.text}
+            src={pdfIcon}
+            onClick={props.onPrint}
+            disabled={props.text.length === 0}
+          />
           <sl-icon-button
             label={
               isFullscreen
@@ -129,7 +142,7 @@ export function DisplayScreen(props: Props) {
       <div class="display-content">
         <div
           ref={editableRef}
-          class="display-text"
+          class={`display-text ${props.text ? "has-value" : "is-empty"}`}
           contentEditable
           role="textbox"
           aria-label={UI_MESSAGES.displayTextboxLabel.text}

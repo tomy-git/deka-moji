@@ -3,6 +3,7 @@ import menuIcon from "bootstrap-icons/icons/list.svg";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { DisplayScreen } from "./components/display-screen";
 import { HistoryPanel } from "./components/history-panel";
+import { SettingsControls } from "./components/settings-controls";
 import {
   SettingsDrawer,
   showSettingsDrawer,
@@ -28,15 +29,9 @@ import {
   savePreferences,
   upsertHistoryEntry
 } from "./lib/storage";
+import { fontClassMap } from "./lib/font-class";
 import { UI_MESSAGES } from "./ui-messages";
 import type { ActiveTheme, FontPreset, HistoryEntry, ThemeChoice } from "./types";
-
-const fontClassMap: Record<FontPreset, string> = {
-  gothic: "font-gothic",
-  mincho: "font-mincho",
-  mono: "font-mono",
-  ud: "font-ud"
-};
 
 function detectSystemTheme(): ActiveTheme {
   if (
@@ -89,6 +84,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = activeTheme.value;
+    textColor.value = activeTheme.value === "dark" ? "#ffffff" : "#000000";
   }, [activeTheme.value]);
 
   const commitCurrentText = () => {
@@ -130,15 +126,31 @@ export function App() {
   };
 
   return (
-    <main
-      class={`app-shell theme-${activeTheme.value} ${fontClassMap[fontPreset.value]}`}
-    >
+    <main class={`app-shell theme-${activeTheme.value}`}>
       <header class="app-header no-print">
         <div class="app-header-copy">
           <p class="eyebrow">{UI_MESSAGES.appEyebrow.text}</p>
-          <h1>{UI_MESSAGES.appTitle.text}</h1>
+          <h1 class={fontClassMap[fontPreset.value]}>{UI_MESSAGES.appTitle.text}</h1>
+        </div>
+        <div class="app-header-settings">
+          <SettingsControls
+            textColor={textColor.value}
+            themeChoice={themeChoice.value}
+            fontPreset={fontPreset.value}
+            fontClassName={fontClassMap[fontPreset.value]}
+            onThemeChange={(value: ThemeChoice) => {
+              themeChoice.value = value;
+            }}
+            onFontChange={(value: FontPreset) => {
+              fontPreset.value = value;
+            }}
+            onTextColorChange={(value: string) => {
+              textColor.value = value;
+            }}
+          />
         </div>
         <sl-icon-button
+          class="app-header-menu"
           label={UI_MESSAGES.openSettings.text}
           src={menuIcon}
           onClick={() => {
@@ -154,6 +166,9 @@ export function App() {
             onSelect={handleHistorySelect}
             onDelete={handleHistoryDelete}
             onClear={handleHistoryClear}
+            onClose={() => {
+              setIsHistoryOpen(false);
+            }}
           />
         </aside>
 
